@@ -4,7 +4,6 @@ import Shell from 'gi://Shell';
 
 import Clutter from 'gi://Clutter';
 import * as Lightbox from 'resource:///org/gnome/shell/ui/lightbox.js';
-const Tweener = imports.tweener.tweener || imports.ui.tweener;
 
 import * as Utils from './utils.js';
 
@@ -39,7 +38,7 @@ class Flashspot extends Lightbox.Lightbox {
       this.actor.add_constraint_with_name("y-bind", constraint);
       constraint = Clutter.BindConstraint.new(this.pactor, Clutter.BindCoordinate.SIZE, 0.0);
       this.actor.add_constraint_with_name("size-bind", constraint);
-      Tweener.addTween(this.actor, {
+      this.actor.ease({
         opacity: 0,
         time: 3*FLASHSPOT_ANIMATION_OUT_TIME,
         onComplete: function() {
@@ -163,7 +162,7 @@ MoveFocus.prototype = {
     if (actor.set_pivot_point) {
       actor.set_pivot_point(0.5, 0.5);
     }
-    Tweener.addTween(actor, {opacity: 255, time: 1});
+    actor.ease({opacity: 255, time: 1});
   },
 
   _activateWindow: function(window) {
