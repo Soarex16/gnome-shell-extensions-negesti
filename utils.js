@@ -1,8 +1,8 @@
-const Gio = imports.gi.Gio;
-const Gtk = imports.gi.Gtk;
-const extensionUtils = imports.misc.extensionUtils;
+import Gio from 'gi://Gio';
+import Gtk from 'gi://Gtk';
+import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
-function Utils() {
+export function Utils() {
   this._init();
 }
 
@@ -77,7 +77,8 @@ Utils.prototype = {
   },
 
   loadSettings: function() {
-    this._settingsObject = extensionUtils.getSettings("org.gnome.shell.extensions.org-lab21-putwindow");
+    const extensionObject = ExtensionPreferences.lookupByUUID("org.gnome.shell.extensions.org-lab21-putwindow");
+    this._settingsObject = extensionObject.getSettings();
     this._settings = {
       locations: JSON.parse(this._settingsObject.get_string("locations"))
     };   

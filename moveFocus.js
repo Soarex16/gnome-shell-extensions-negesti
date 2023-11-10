@@ -1,17 +1,16 @@
-const Meta = imports.gi.Meta;
-const Main = imports.ui.main;
-const Shell = imports.gi.Shell;
+import Meta from 'gi://Meta';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import Shell from 'gi://Shell';
 
-const Clutter = imports.gi.Clutter;
-const Lightbox = imports.ui.lightbox;
+import Clutter from 'gi://Clutter';
+import * as Lightbox from 'resource:///org/gnome/shell/ui/lightbox.js';
 const Tweener = imports.tweener.tweener || imports.ui.tweener;
 
-const Extension = imports.misc.extensionUtils.getCurrentExtension();
-const Utils = Extension.imports.utils;
+import * as Utils from './utils.js';
 
-const GObject = imports.gi.GObject;
+import GObject from 'gi://GObject';
 
-function MoveFocus(utils, screens) {
+export function MoveFocus(utils, screens) {
   this._init(utils, screens);
 }
 

@@ -1,12 +1,13 @@
 
-const Meta = imports.gi.Meta;
-const Main = imports.ui.main;
-const Mainloop = imports.mainloop;
-const Shell = imports.gi.Shell;
+import Meta from 'gi://Meta';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import GLib from 'gi://GLib';
+import Shell from 'gi://Shell';
 
-const Extension = imports.misc.extensionUtils.getCurrentExtension();
-const Utils = Extension.imports.utils;
-const MoveFocus = Extension.imports.moveFocus;
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+
+import * as Utils from './utils.js';
+import * as MoveFocus from './moveFocus.js';
 
 // disabled for now
 // TODO - fix moveWorkspace
@@ -712,7 +713,7 @@ MoveWindow.prototype = {
     if (!app) {
       if (!noRecurse) {
         // window is not tracked yet
-        Mainloop.idle_add(() => {
+        GLib.idle_add(() => {
           this._moveConfiguredWhenCreated(display, win, true);
           return;
         });
@@ -1081,36 +1082,35 @@ MoveWindow.prototype = {
   }
 };
 
-function init(meta) {
-}
+export default class PutWindowsExtension extends Extension {
+  enable() {
+    this.original_get_center = Meta.Window.prototype.get_center;
 
-function enable() {
-  this.original_get_center = Meta.Window.prototype.get_center;
-  
-  if ((typeof Meta.Window.prototype.get_frame_rect) == "undefined") {
-    this.original_get_frame_rect = Meta.Window.prototype.get_frame_rect;
-    Meta.Window.prototype.get_frame_rect = function() {
-      return this.get_outer_rect();
+    if ((typeof Meta.Window.prototype.get_frame_rect) == "undefined") {
+      this.original_get_frame_rect = Meta.Window.prototype.get_frame_rect;
+      Meta.Window.prototype.get_frame_rect = function() {
+        return this.get_outer_rect();
+      }
     }
+
+    //Meta.Window.get_center()
+    Meta.Window.prototype.get_center = function(){
+      let rect = this.get_frame_rect();
+      return {x: rect.x + rect.width / 2, y: rect.y + rect.height / 2};
+    };
+    _moveWindow = new MoveWindow();
   }
 
-  //Meta.Window.get_center()
-  Meta.Window.prototype.get_center = function(){
-    let rect = this.get_frame_rect();
-    return {x: rect.x + rect.width / 2, y: rect.y + rect.height / 2};
-  };
-  _moveWindow = new MoveWindow();
-}
+  disable() {
+    // remove monkey patch, get_center
+    Meta.Window.prototype.get_center = this.original_get_center;
 
-function disable() {  
-  // remove monkey patch, get_center
-  Meta.Window.prototype.get_center = this.original_get_center;
+    if (this.original_get_frame_rect) {
+      Meta.Window.prototype.get_frame_rect = this.original_get_frame_rect;
+    }
 
-  if (this.original_get_frame_rect) { 
-    Meta.Window.prototype.get_frame_rect = this.original_get_frame_rect;
+
+    _moveWindow.destroy();
+    _moveWindow = null;
   }
-  
-  
-  _moveWindow.destroy();
-  _moveWindow = null;
 }

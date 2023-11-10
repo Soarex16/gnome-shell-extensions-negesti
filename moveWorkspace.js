@@ -1,6 +1,6 @@
-const Meta = imports.gi.Meta;
-const Main = imports.ui.main;
-const Shell = imports.gi.Shell;
+import Meta from 'gi://Meta';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import Shell from 'gi://Shell';
 
 /**
 * Based on code by Florain Müller and the auto-move-window-extension. 
@@ -8,7 +8,7 @@ const Shell = imports.gi.Shell;
 * 
 *
 */
-function MoveWorkspace(utils) {
+export function MoveWorkspace(utils) {
   this._init(utils);
 }
 
